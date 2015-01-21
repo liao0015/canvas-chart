@@ -2,10 +2,109 @@
 <html>
 <head>
 <meta charset="utf-8">
+<script src="data.js"></script>
 <title>PIE Chart</title>
 </head>
 
 <body>
-My first Canvas Pie Chart!
+
+<canvas id="pie" height="400" width="400"></canvas>
+<canvas id="bar" height="400" width="400"></canvas>
+
+<script>
+var total = 0;
+for(var i=0; i<data.segments.length; i++){
+  total += data.segments[i].value;
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+	showpie();
+	showBars();
+});
+	
+function showpie(){
+	var radius = 0;
+	var canvas = document.querySelector("#pie");
+	var context = canvas.getContext("2d");
+	var cx = 150;
+	var cy = 200; 
+	var currentAngle = 0;
+	for (var i=0; i<data.segments.length; i++){
+		//sizes of radius in different conditions
+		if (data.segments[i].value == Math.max(18.8496,43.9823,25.1327,31.4159,3.1416,12.5664)){
+			var radius = radius * 0.9;	
+		} else if (data.segments[i].value == Math.min(18.8496,43.9823,25.1327,31.4159,3.1416,12.5664)){
+			var radius = radius * 1.1;
+		} else {
+			var radius = 100;
+		};
+		
+		var pct = data.segments[i].value / total;
+		var endAngle = currentAngle + pct * (Math.PI * 2);
+
+		//draw the arc
+		context.beginPath();
+		context.moveTo(cx, cy);
+		context.arc(cx, cy, radius, currentAngle, endAngle, false); 
+		context.lineTo(cx, cy);
+		context.fillStyle = data.segments[i].color;
+		context.fill();
+
+		//draw the line for the arc
+		var midAngle = (currentAngle + endAngle)/2;
+		context.save();
+		context.translate(cx, cy);
+		context.strokeStyle = "black";
+		context.lineWidth = 2;
+		context.beginPath();
+		var dx = Math.cos(midAngle) * (0.5 * radius);
+    	var dy = Math.sin(midAngle) * (0.5 * radius);
+    	context.moveTo(dx, dy);
+		var dx = Math.cos(midAngle) * (radius + 20);
+		var dy = Math.sin(midAngle) * (radius + 20);
+		context.lineTo(dx, dy);
+		context.stroke();
+		
+		//add text lables
+		var dx = Math.cos(midAngle) * (radius + 40);
+		var dy = Math.sin(midAngle) * (radius + 40);
+		context.font = "bold 10pt Arial"; 
+		context.fillText(data.segments[i].label, dx, dy);
+		
+		context.restore(); 
+		currentAngle = endAngle;
+	}; 
+}
+
+function showBars(){
+	var canvas = document.querySelector("#bar");
+	var context = canvas.getContext("2d");
+	var graphHeight = 300;    
+	var offsetX = 30;	
+	var barWidth = 30;	
+	var spaceBetweenPoints = 20; 
+	var x = offsetX + 20;	
+	context.beginPath();
+	for(var i=0; i<data.segments.length; i++){
+		var pct = data.segments[i].value / total;
+		var barHeight = (graphHeight * pct);
+		context.rect(x, graphHeight-1, barWidth, -1 * barHeight);
+		context.fillText(data.segments[i].label, x-10, graphHeight - barHeight - 30-1);
+		x = x + barWidth + spaceBetweenPoints;
+		context.fillStyle = data.segments[i].color;
+		context.fill();	
+		context.restore(); 	
+	  }	
+	  //draw the x and y axises
+	  context.strokeStyle = "black";
+	  context.lineWidth = 2;
+	  context.beginPath();
+	  context.moveTo(offsetX, canvas.height-graphHeight);
+	  context.lineTo(offsetX, graphHeight);
+	  context.lineTo(canvas.width-offsetX, graphHeight);
+	  context.stroke();  
+	}
+
+</script>
 </body>
 </html>
