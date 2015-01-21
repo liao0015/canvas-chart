@@ -30,13 +30,14 @@ function showpie(){
 	var cy = 200; 
 	var currentAngle = 0;
 	for (var i=0; i<data.segments.length; i++){
+		
 		//sizes of radius in different conditions
 		if (data.segments[i].value == Math.max(18.8496,43.9823,25.1327,31.4159,3.1416,12.5664)){
-			var radius = radius * 0.9;	
+			radius = radius * 0.9;	
 		} else if (data.segments[i].value == Math.min(18.8496,43.9823,25.1327,31.4159,3.1416,12.5664)){
-			var radius = radius * 1.1;
+			radius = radius * 1.1;
 		} else {
-			var radius = 100;
+			radius = 100;
 		};
 		
 		var pct = data.segments[i].value / total;
@@ -50,7 +51,7 @@ function showpie(){
 		context.fillStyle = data.segments[i].color;
 		context.fill();
 
-		//draw the line for the arc
+		//draw the line
 		var midAngle = (currentAngle + endAngle)/2;
 		context.save();
 		context.translate(cx, cy);
@@ -83,18 +84,23 @@ function showBars(){
 	var offsetX = 30;	
 	var barWidth = 30;	
 	var spaceBetweenPoints = 20; 
-	var x = offsetX + 20;	
-	context.beginPath();
+	var tab = offsetX + 40;	
 	for(var i=0; i<data.segments.length; i++){
 		var pct = data.segments[i].value / total;
 		var barHeight = (graphHeight * pct);
-		context.rect(x, graphHeight-1, barWidth, -1 * barHeight);
-		context.fillText(data.segments[i].label, x-10, graphHeight - barHeight - 30-1);
-		x = x + barWidth + spaceBetweenPoints;
+		
+		//draw rectangle bars
+		context.beginPath();
+		context.rect(tab, graphHeight - 2, barWidth, -1 * barHeight);
 		context.fillStyle = data.segments[i].color;
 		context.fill();	
-		context.restore(); 	
+		
+		//add text lables
+		context.fillText(data.segments[i].label, tab - 5, graphHeight - barHeight - 20);
+		
+		tab = tab + barWidth + spaceBetweenPoints;		
 	  }	
+	  
 	  //draw the x and y axises
 	  context.strokeStyle = "black";
 	  context.lineWidth = 2;
@@ -103,7 +109,7 @@ function showBars(){
 	  context.lineTo(offsetX, graphHeight);
 	  context.lineTo(canvas.width-offsetX, graphHeight);
 	  context.stroke();  
-	}
+}
 
 </script>
 </body>
